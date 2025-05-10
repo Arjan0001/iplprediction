@@ -104,13 +104,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Generate and Preview CSV
     function generateAndPreviewCSV() {
         const tableRows = document.querySelectorAll('#team-data-table tbody tr');
-        let csvData = 'Team,Points,NRR\n';
+        let csvData = 'Team,Points,NRR,remaining-matches/n';
         let isValid = true;
         
         tableRows.forEach(row => {
             const teamName = row.cells[0].textContent.trim();
             const points = row.querySelector('.points-input').value;
             const nrr = row.querySelector('.nrr-input').value;
+            const nrr = row.querySelector('.remaining-matches-input').value;
             
             // Validate inputs
             if (!points || !nrr) {
