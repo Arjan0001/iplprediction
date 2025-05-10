@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // API Endpoints (replace with actual endpoints when available)
     const API_ENDPOINTS = {
         UPLOAD_CSV: 'https://api.example.com/api/upload',
-        GET_PREDICTIONS: 'https://ipl-api-256854902296.asia-south1.run.app'
+        GET_PREDICTIONS: 'https://api.example.com'
     };
 
     // Check for saved theme preference
@@ -104,14 +104,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Generate and Preview CSV
     function generateAndPreviewCSV() {
         const tableRows = document.querySelectorAll('#team-data-table tbody tr');
-        let csvData = 'Team,Points,NRR,remaining-matches/n';
+        let csvData = 'Team,Points,NRR\n';
         let isValid = true;
         
         tableRows.forEach(row => {
             const teamName = row.cells[0].textContent.trim();
             const points = row.querySelector('.points-input').value;
             const nrr = row.querySelector('.nrr-input').value;
-            const nrr = row.querySelector('.remaining-matches-input').value;
             
             // Validate inputs
             if (!points || !nrr) {
