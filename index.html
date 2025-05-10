@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPL Top 4 Predictor</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="light-mode">
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="title-container">
+                    <h1>IPL Top 4 Predictor</h1>
+                    <p class="subtitle">Predicting IPL Playoff Teams Using Machine Learning</p>
+                </div>
+                <div class="theme-toggle">
+                    <button id="theme-toggle-btn">
+                        <i class="fas fa-moon"></i>
+                        <span>Dark Mode</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section class="about">
+        <div class="container">
+            <h2>About This Project</h2>
+            <div class="about-content">
+                <p>
+                    This project predicts the Top 4 IPL teams and the eliminated teams based on current season performance. 
+                    A Machine Learning model trained on past IPL data powers the predictions. The model is hosted on the 
+                    backend and communicates with the frontend via a REST API.
+                </p>
+                <p>
+                    Users can manually enter team data, which will be converted into a CSV file and submitted to the backend. 
+                    The backend returns predictions, which are displayed interactively on the site.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CSV Input Section -->
+    <section class="csv-input">
+        <div class="container">
+            <h2>Team Data Input</h2>
+            <div class="form-container">
+                <table id="team-data-table">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Points</th>
+                            <th>Net Run Rate (NRR)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Chennai Super Kings (CSK)</td>
+                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
+                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
+                        </tr>
+                        <tr>
+                            <td>Mumbai Indians (MI)</td>
+                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
+                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
+                        </tr>
+                        <tr>
+                            <td>Royal Challengers Bangalore (RCB)</td>
+                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
+                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
+                        </tr>
+                        <tr>
+                            <td>Kolkata Knight Riders (KKR)</td>
+                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
+                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
+                        </tr>
+                        <tr>
+                            <td>Delhi Capitals (DC)</td>
+                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
+                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
+                        </tr>
+                        <tr>
+                            <td>Sunrisers Hyderabad (SRH)</td>
+                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
+                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
+                        </tr>
+                        <tr>
+                            <td>Punjab Kings (PBKS)</td>
+                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
+                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
+                        </tr>
+                        <tr>
+                            <td>Rajasthan Royals (RR)</td>
+                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
+                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
+                        </tr>
+                        <tr>
+                            <td>Gujarat Titans (GT)</td>
+                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
+                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
+                        </tr>
+                        <tr>
+                            <td>Lucknow Super Giants (LSG)</td>
+                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
+                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="form-actions">
+                    <button id="reset-form-btn" class="secondary-btn">Reset Form</button>
+                    <button id="generate-csv-btn" class="primary-btn">Generate & Submit CSV</button>
+                </div>
+                <div id="csv-preview-container" class="hidden">
+                    <h3>CSV Preview</h3>
+                    <pre id="csv-preview"></pre>
+                    <button id="download-csv-btn" class="secondary-btn">Download CSV</button>
+                    <button id="submit-csv-btn" class="primary-btn">Submit to API</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Prediction Section -->
+    <section class="prediction">
+        <div class="container">
+            <div class="prediction-header">
+                <h2>Prediction Results</h2>
+                <button id="refresh-predictions-btn" class="secondary-btn">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            <div id="loading-spinner" class="hidden">
+                <div class="spinner"></div>
+                <p>Loading predictions...</p>
+            </div>
+            <div id="error-message" class="hidden">
+                <p>Failed to fetch predictions. Please try again.</p>
+            </div>
+            <div id="prediction-results" class="hidden">
+                <div class="top-teams">
+                    <h3>Top 4 Teams</h3>
+                    <div class="team-cards" id="top-teams-container">
+                        <!-- Team cards will be inserted here by JavaScript -->
+                    </div>
+                </div>
+                <div class="eliminated-teams">
+                    <h3>Eliminated Teams</h3>
+                    <div class="team-cards" id="eliminated-teams-container">
+                        <!-- Eliminated team cards will be inserted here by JavaScript -->
+                    </div>
+                </div>
+                <div class="last-updated">
+                    <p>Last Updated: <span id="last-updated-time">Never</span></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="credits">
+                    <h3>Project Credits</h3>
+                    <p>Developed by IPL Prediction Team</p>
+                </div>
+                <div class="team-members">
+                    <h3>Team Members</h3>
+                    <ul>
+                        <li>John Doe</li>
+                        <li>Jane Smith</li>
+                    </ul>
+                </div>
+                <div class="repository">
+                    <h3>Repository</h3>
+                    <a href="https://github.com/username/ipl-predictor" target="_blank">
+                        <i class="fab fa-github"></i> GitHub Repository
+                    </a>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 IPL Top 4 Predictor. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <div class="toast-content">
+            <i class="fas fa-check-circle"></i>
+            <div class="toast-message">CSV submitted successfully!</div>
+        </div>
+        <div class="toast-progress"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
