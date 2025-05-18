@@ -27,118 +27,172 @@
     </header>
 
     <!-- About Section -->
-    <section class="about">
-        <div class="container">
-            <h2>About This Project</h2>
-            <div class="about-content">
-                <p>
-                    This project predicts the Top 4 IPL teams and the eliminated teams based on current season performance. 
-                    A Machine Learning model trained on past IPL data powers the predictions. The model is hosted on the 
-                    backend and communicates with the frontend via a REST API.
-                </p>
-                <p>
-                    Users can manually enter team data, which will be converted into a CSV file and submitted to the backend. 
-                    The backend returns predictions, which are displayed interactively on the site.
-                </p>
+   <section class="about">
+    <div class="container">
+        <h2>About This Project</h2>
+        <div class="about-content">
+            <p>
+                IPL Top 4 Predictor is a data-driven web application developed as part of the 
+                <strong>Machine Learning and Deep Learning Premier League (MDPL)</strong>, a national-level datathon 
+                organized by <strong>Thiagarajar School of Management (TSM), Tamil Nadu</strong>.
+            </p>
+            <p>
+                The project uses a Machine Learning model trained on historical IPL data to predict the 
+                <strong>Top 4 playoff teams</strong> and <strong>eliminated teams</strong> of the current season. 
+                The model is deployed on a Python-based FastAPI backend and communicates with the frontend via a REST API.
+            </p>
+            <p>
+                Users can manually input team performance data (Matches, Wins, Losses, Points, NRR, Remaining Matches), 
+                which is converted into a CSV file and submitted to the backend. The predictions returned by the ML model 
+                are then displayed interactively through a clean and responsive React-based frontend.
+            </p>
+            <p>
+                This project highlights real-world applications of <strong>Machine Learning</strong>, 
+                <strong>sports analytics</strong>, and <strong>web deployment</strong>, and serves as a showcase 
+                of our team's technical skills in solving competitive data challenges.
+            </p>
+
+            <h3>Usage Guide</h3>
+            <ol>
+                <li>Enter current performance data for each IPL team in the input table.</li>
+                <li>Click on <strong>“Generate & Submit CSV”</strong> to send the data to the backend model.</li>
+                <li>
+                    Please wait for <strong>30–40 seconds</strong> while the model processes the input and generates predictions.
+                </li>
+                <li>The system will return and display the predicted Top 4 and eliminated teams.</li>
+                <li>Click <strong>“Refresh”</strong> to rerun predictions with updated data.</li>
+                <li>Use the <strong>“Reset Form”</strong> button to clear all inputs and start over.</li>
+            </ol>
+        </div>
+    </div>
+</section>
+
+
+<!-- CSV Input Section -->
+<section class="csv-input">
+    <div class="container">
+        <h2>Team Data Input</h2>
+        <div class="form-container">
+            <table id="team-data-table">
+    <thead>
+        <tr>
+            <th>Team</th>
+            <th>Matches</th>
+            <th>Won</th>
+            <th>Lost</th>
+            <th>Points</th>
+            <th>Net Run Rate (NRR)</th>
+            <th>Remaining Matches</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Chennai Super Kings</td>
+            <td><input type="number" class="matches-input" min="0" max="14" value="12"></td>
+            <td><input type="number" class="won-input" min="0" max="14" value="3"></td>
+            <td><input type="number" class="lost-input" min="0" max="14" value="9"></td>
+            <td><input type="number" class="points-input" min="0" max="20" step="2" value="6"></td>
+            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3" value="-0.992"></td>
+            <td><input type="number" class="remaining-input" min="0" max="5" value="2"></td>
+        </tr>
+        <tr>
+            <td>Mumbai Indians</td>
+            <td><input type="number" class="matches-input" value="12"></td>
+            <td><input type="number" class="won-input" value="7"></td>
+            <td><input type="number" class="lost-input" value="5"></td>
+            <td><input type="number" class="points-input" value="14"></td>
+            <td><input type="number" class="nrr-input" value="1.156"></td>
+            <td><input type="number" class="remaining-input" value="2"></td>
+        </tr>
+        <tr>
+            <td>Royal Challengers Bengaluru</td>
+            <td><input type="number" class="matches-input" value="11"></td>
+            <td><input type="number" class="won-input" value="8"></td>
+            <td><input type="number" class="lost-input" value="3"></td>
+            <td><input type="number" class="points-input" value="16"></td>
+            <td><input type="number" class="nrr-input" value="0.482"></td>
+            <td><input type="number" class="remaining-input" value="3"></td>
+        </tr>
+        <tr>
+            <td>Kolkata Knight Riders</td>
+            <td><input type="number" class="matches-input" value="12"></td>
+            <td><input type="number" class="won-input" value="5"></td>
+            <td><input type="number" class="lost-input" value="6"></td>
+            <td><input type="number" class="points-input" value="11"></td>
+            <td><input type="number" class="nrr-input" value="0.193"></td>
+            <td><input type="number" class="remaining-input" value="2"></td>
+        </tr>
+        <tr>
+            <td>Delhi Capitals</td>
+            <td><input type="number" class="matches-input" value="11"></td>
+            <td><input type="number" class="won-input" value="6"></td>
+            <td><input type="number" class="lost-input" value="6"></td>
+            <td><input type="number" class="points-input" value="13"></td>
+            <td><input type="number" class="nrr-input" value="0.362"></td>
+            <td><input type="number" class="remaining-input" value="3"></td>
+        </tr>
+        <tr>
+            <td>Sunrisers Hyderabad</td>
+            <td><input type="number" class="matches-input" value="11"></td>
+            <td><input type="number" class="won-input" value="3"></td>
+            <td><input type="number" class="lost-input" value="9"></td>
+            <td><input type="number" class="points-input" value="7"></td>
+            <td><input type="number" class="nrr-input" value="-1.192"></td>
+            <td><input type="number" class="remaining-input" value="3"></td>
+        </tr>
+        <tr>
+            <td>Punjab Kings</td>
+            <td><input type="number" class="matches-input" value="11"></td>
+            <td><input type="number" class="won-input" value="7"></td>
+            <td><input type="number" class="lost-input" value="3"></td>
+            <td><input type="number" class="points-input" value="15"></td>
+            <td><input type="number" class="nrr-input" value="0.376"></td>
+            <td><input type="number" class="remaining-input" value="3"></td>
+        </tr>
+        <tr>
+            <td>Rajasthan Royals</td>
+            <td><input type="number" class="matches-input" value="12"></td>
+            <td><input type="number" class="won-input" value="3"></td>
+            <td><input type="number" class="lost-input" value="9"></td>
+            <td><input type="number" class="points-input" value="6"></td>
+            <td><input type="number" class="nrr-input" value="-0.718"></td>
+            <td><input type="number" class="remaining-input" value="2"></td>
+        </tr>
+        <tr>
+            <td>Gujarat Titans</td>
+            <td><input type="number" class="matches-input" value="11"></td>
+            <td><input type="number" class="won-input" value="8"></td>
+            <td><input type="number" class="lost-input" value="3"></td>
+            <td><input type="number" class="points-input" value="16"></td>
+            <td><input type="number" class="nrr-input" value="0.793"></td>
+            <td><input type="number" class="remaining-input" value="2"></td>
+        </tr>
+        <tr>
+            <td>Lucknow Super Giants</td>
+            <td><input type="number" class="matches-input" value="11"></td>
+            <td><input type="number" class="won-input" value="5"></td>
+            <td><input type="number" class="lost-input" value="7"></td>
+            <td><input type="number" class="points-input" value="10"></td>
+            <td><input type="number" class="nrr-input" value="-0.469"></td>
+            <td><input type="number" class="remaining-input" value="3"></td>
+        </tr>
+    </tbody>
+</table>
+
+            <div class="form-actions">
+                <button id="reset-form-btn" class="secondary-btn">Reset Form</button>
+                <button id="generate-csv-btn" class="primary-btn">Generate & Submit CSV</button>
+            </div>
+            <div id="csv-preview-container" class="hidden">
+                <h3>CSV Preview</h3>
+                <pre id="csv-preview"></pre>
+                <button id="download-csv-btn" class="secondary-btn">Download CSV</button>
+                <button id="submit-csv-btn" class="primary-btn">Submit to API</button>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- CSV Input Section -->
-    <section class="csv-input">
-        <div class="container">
-            <h2>Team Data Input</h2>
-            <div class="form-container">
-                <table id="team-data-table">
-                    <thead>
-                        <tr>
-                            <th>Team</th>
-                            <th>Points</th>
-                            <th>Net Run Rate (NRR)</th>
-                            <th>remaining matches</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Chennai Super Kings (CSK)</td>
-                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
-                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
-                            <td><input type="number" class="remaining-matches-input" step="0.001" min="-3" max="3"></td>
-                        </tr>
-                        <tr>
-                            <td>Mumbai Indians (MI)</td>
-                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
-                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
-                            <td><input type="number" class="remaining-matches-input" step="0.001" min="-3" max="3"></td>
-
-                        </tr>
-                        <tr>
-                            <td>Royal Challengers Bangalore (RCB)</td>
-                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
-                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
-                            <td><input type="number" class="remaining-matches-input" step="0.001" min="-3" max="3"></td>
-
-                        </tr>
-                        <tr>
-                            <td>Kolkata Knight Riders (KKR)</td>
-                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
-                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
-                            <td><input type="number" class="remaining-matches-input" step="0.001" min="-3" max="3"></td>
-
-                        </tr>
-                        <tr>
-                            <td>Delhi Capitals (DC)</td>
-                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
-                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
-                            <td><input type="number" class="remaining-matches-input" step="0.001" min="-3" max="3"></td>
-
-                        </tr>
-                        <tr>
-                            <td>Sunrisers Hyderabad (SRH)</td>
-                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
-                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
-                            <td><input type="number" class="remaining-matches-input" step="0.001" min="-3" max="3"></td>
-
-                        </tr>
-                        <tr>
-                            <td>Punjab Kings (PBKS)</td>
-                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
-                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
-                            <td><input type="number" class="remaining-matches-input" step="0.001" min="-3" max="3"></td>
-                        </tr>
-                        <tr>
-                            <td>Rajasthan Royals (RR)</td>
-                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
-                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
-                            <td><input type="number" class="remaining-matches-input" step="0.001" min="-3" max="3"></td>
-                        </tr>
-                        <tr>
-                            <td>Gujarat Titans (GT)</td>
-                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
-                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
-                            <td><input type="number" class="remaining-matches-input" step="0.001" min="-3" max="3"></td>
-                        </tr>
-                        <tr>
-                            <td>Lucknow Super Giants (LSG)</td>
-                            <td><input type="number" class="points-input" min="0" max="20" step="2"></td>
-                            <td><input type="number" class="nrr-input" step="0.001" min="-3" max="3"></td>
-                            <td><input type="number" class="remaining-matches-input" step="0.001" min="-3" max="3"></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="form-actions">
-                    <button id="reset-form-btn" class="secondary-btn">Reset Form</button>
-                    <button id="generate-csv-btn" class="primary-btn">Generate & Submit CSV</button>
-                </div>
-                <div id="csv-preview-container" class="hidden">
-                    <h3>CSV Preview</h3>
-                    <pre id="csv-preview"></pre>
-                    <button id="download-csv-btn" class="secondary-btn">Download CSV</button>
-                    <button id="submit-csv-btn" class="primary-btn">Submit to API</button>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Prediction Section -->
     <section class="prediction">
@@ -182,15 +236,15 @@
             <div class="footer-content">
                 <div class="credits">
                     <h3>Project Credits</h3>
-                    <p>WeBwizarD</p>
+                    <p>Developed by Team WeBwizarD</p>
                 </div>
                 <div class="team-members">
                     <h3>Team Members</h3>
                     <ul>
-                        <li>Pratik Misharam</li>
-                        <li>Kartiki Raguvanshi</li>
-                        <li>Piyush Bhavsar</li>
-                        <li>Arjan Pathan</li>
+                        <li>Pratik Meshram</li>
+                        <li>Kartiki Suryavanshi</li>
+                         <li>Arjan Pathan</li>
+                          <li>Piyush Bhavsar</li>
                     </ul>
                 </div>
                 <div class="repository">
@@ -201,7 +255,7 @@
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2025 IPL Top 4 Predictor by WeBwizarD . All rights reserved.</p>
+                <p>&copy; 2025 IPL Top 4 Predictor. All rights reserved.</p>
             </div>
         </div>
     </footer>

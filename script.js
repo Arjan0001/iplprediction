@@ -1,292 +1,79 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // DOM Elements
-    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+document.addEventListener('DOMContentLoaded', () => {
     const generateCsvBtn = document.getElementById('generate-csv-btn');
+    const downloadCsvBtn = document.getElementById('download-csv-btn');
+    const submitCsvBtn = document.getElementById('submit-csv-btn');
     const resetFormBtn = document.getElementById('reset-form-btn');
     const csvPreviewContainer = document.getElementById('csv-preview-container');
     const csvPreview = document.getElementById('csv-preview');
-    const downloadCsvBtn = document.getElementById('download-csv-btn');
-    const submitCsvBtn = document.getElementById('submit-csv-btn');
-    const refreshPredictionsBtn = document.getElementById('refresh-predictions-btn');
-    const loadingSpinner = document.getElementById('loading-spinner');
-    const errorMessage = document.getElementById('error-message');
-    const predictionResults = document.getElementById('prediction-results');
-    const topTeamsContainer = document.getElementById('top-teams-container');
-    const eliminatedTeamsContainer = document.getElementById('eliminated-teams-container');
-    const lastUpdatedTime = document.getElementById('last-updated-time');
     const toast = document.getElementById('toast');
 
-    // Team logos mapping (for bonus feature)
-    const teamLogos = {
-        'CSK': 'https://static.iplt20.com/players/284/csk.png',
-        'MI': 'https://static.iplt20.com/players/284/mi.png',
-        'RCB': 'https://static.iplt20.com/players/284/rcb.png',
-        'KKR': 'https://static.iplt20.com/players/284/kkr.png',
-        'DC': 'https://static.iplt20.com/players/284/dc.png',
-        'SRH': 'https://static.iplt20.com/players/284/srh.png',
-        'PBKS': 'https://static.iplt20.com/players/284/pbks.png',
-        'RR': 'https://static.iplt20.com/players/284/rr.png',
-        'GT': 'https://static.iplt20.com/players/284/gt.png',
-        'LSG': 'https://static.iplt20.com/players/284/lsg.png'
+    const topTeamsContainer = document.getElementById('top-teams-container');
+    const eliminatedTeamsContainer = document.getElementById('eliminated-teams-container');
+    const predictionResults = document.getElementById('prediction-results');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const errorMessage = document.getElementById('error-message');
+    const lastUpdatedTime = document.getElementById('last-updated-time');
+
+    const API_URL = "https://ipl-api-256854902296.asia-south1.run.app/ipl2025";
+
+    const TEAM_LOGOS = {
+        "CSK": "logos\csk.png",
+        "MI": "logos\mi.png",
+        "RCB": "logos\rcb.png",
+        "GT": "logos\gt.png",
+        "RR": "logos\rr.png",
+        "KKR": "logos\kkr.png",
+        "LSG": "logos\lsg.png",
+        "PBKS": "logos\pbks.png",
+        "DC": "logos\dc.png",
+        "SRH": "logos\srh.png"
     };
 
-    // Team full names mapping
-    const teamFullNames = {
-        'CSK': 'Chennai Super Kings',
-        'MI': 'Mumbai Indians',
-        'RCB': 'Royal Challengers Bangalore',
-        'KKR': 'Kolkata Knight Riders',
-        'DC': 'Delhi Capitals',
-        'SRH': 'Sunrisers Hyderabad',
-        'PBKS': 'Punjab Kings',
-        'RR': 'Rajasthan Royals',
-        'GT': 'Gujarat Titans',
-        'LSG': 'Lucknow Super Giants'
+    const TEAM_FULL_NAMES = {
+        "CSK": "Chennai Super Kings",
+        "MI": "Mumbai Indians",
+        "RCB": "Royal Challengers Bangalore",
+        "GT": "Gujarat Titans",
+        "RR": "Rajasthan Royals",
+        "KKR": "Kolkata Knight Riders",
+        "LSG": "Lucknow Super Giants",
+        "PBKS": "Punjab Kings",
+        "DC": "Delhi Capitals",
+        "SRH": "Sunrisers Hyderabad"
     };
 
-    // Team abbreviations mapping
-    const teamAbbreviations = {
-        'Chennai Super Kings (CSK)': 'CSK',
-        'Mumbai Indians (MI)': 'MI',
-        'Royal Challengers Bangalore (RCB)': 'RCB',
-        'Kolkata Knight Riders (KKR)': 'KKR',
-        'Delhi Capitals (DC)': 'DC',
-        'Sunrisers Hyderabad (SRH)': 'SRH',
-        'Punjab Kings (PBKS)': 'PBKS',
-        'Rajasthan Royals (RR)': 'RR',
-        'Gujarat Titans (GT)': 'GT',
-        'Lucknow Super Giants (LSG)': 'LSG'
+    const getTeamData = () => {
+        const rows = document.querySelectorAll('#team-data-table tbody tr');
+        const data = [['Team', 'Matches', 'Won', 'Lost', 'Points', 'NRR', 'Remaining_Matches']];
+        rows.forEach(row => {
+            const team = row.cells[0].innerText.trim();
+            const matches = row.querySelector('.matches-input')?.value || '0';
+            const won = row.querySelector('.won-input')?.value || '0';
+            const lost = row.querySelector('.lost-input')?.value || '0';
+            const points = row.querySelector('.points-input')?.value || '0';
+            const nrr = row.querySelector('.nrr-input')?.value || '0';
+            const remaining = row.querySelector('.remaining-input')?.value || '0';
+            data.push([team, matches, won, lost, points, nrr, remaining]);
+        });
+        return data;
     };
 
-    // API Endpoints (replace with actual endpoints when available)
-    const API_ENDPOINTS = {
-        UPLOAD_CSV: 'https://api.example.com/api/upload',
-        GET_PREDICTIONS: 'https://api.example.com'
+    const convertToCSV = (data) => {
+        return data.map(row => row.join(',')).join('\n');
     };
 
-    // Check for saved theme preference
-    initTheme();
+    const showToast = (message) => {
+        toast.querySelector('.toast-message').textContent = message;
+        toast.classList.remove('hidden');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    };
 
-    // Event Listeners
-    themeToggleBtn.addEventListener('click', toggleTheme);
-    generateCsvBtn.addEventListener('click', generateAndPreviewCSV);
-    resetFormBtn.addEventListener('click', resetForm);
-    downloadCsvBtn.addEventListener('click', downloadCSV);
-    submitCsvBtn.addEventListener('click', submitCSV);
-    refreshPredictionsBtn.addEventListener('click', fetchPredictions);
+    const createCSVFile = (csvText) => {
+        const blob = new Blob([csvText], { type: 'text/csv' });
+        return new File([blob], 'team_data.csv', { type: 'text/csv' });
+    };
 
-    // Theme Toggle Function
-    function toggleTheme() {
-        const body = document.body;
-        const isDarkMode = body.classList.toggle('dark-mode');
-        
-        // Update button text and icon
-        if (isDarkMode) {
-            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-        } else {
-            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-        }
-        
-        // Save preference to localStorage
-        localStorage.setItem('darkMode', isDarkMode);
-    }
-
-    // Initialize theme based on saved preference
-    function initTheme() {
-        const savedTheme = localStorage.getItem('darkMode');
-        
-        if (savedTheme === 'true') {
-            document.body.classList.add('dark-mode');
-            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-        }
-    }
-
-    // Generate and Preview CSV
-    function generateAndPreviewCSV() {
-        const tableRows = document.querySelectorAll('#team-data-table tbody tr');
-        let csvData = 'Team,Points,NRR\n';
-        let isValid = true;
-        
-        tableRows.forEach(row => {
-            const teamName = row.cells[0].textContent.trim();
-            const points = row.querySelector('.points-input').value;
-            const nrr = row.querySelector('.nrr-input').value;
-            
-            // Validate inputs
-            if (!points || !nrr) {
-                isValid = false;
-                return;
-            }
-            
-            // Add to CSV string
-            csvData += `${teamAbbreviations[teamName]},${points},${nrr}\n`;
-        });
-        
-        if (!isValid) {
-            alert('Please fill in all fields for all teams.');
-            return;
-        }
-        
-        // Show CSV preview
-        csvPreview.textContent = csvData;
-        csvPreviewContainer.classList.remove('hidden');
-        
-        // Store CSV data for later use
-        window.generatedCSV = csvData;
-    }
-
-    // Reset Form
-    function resetForm() {
-        const inputs = document.querySelectorAll('#team-data-table input');
-        inputs.forEach(input => input.value = '');
-        csvPreviewContainer.classList.add('hidden');
-    }
-
-    // Download CSV
-    function downloadCSV() {
-        if (!window.generatedCSV) return;
-        
-        const blob = new Blob([window.generatedCSV], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'ipl_team_data.csv';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
-    // Submit CSV to API
-    function submitCSV() {
-        if (!window.generatedCSV) return;
-        
-        // Show loading spinner
-        loadingSpinner.classList.remove('hidden');
-        predictionResults.classList.add('hidden');
-        errorMessage.classList.add('hidden');
-        
-        // Create FormData
-        const formData = new FormData();
-        const blob = new Blob([window.generatedCSV], { type: 'text/csv' });
-        formData.append('file', blob, 'team_data.csv');
-        
-        // For demo purposes, we'll simulate an API call
-        setTimeout(() => {
-            // Hide CSV preview
-            csvPreviewContainer.classList.add('hidden');
-            
-            // Show toast notification
-            showToast('CSV submitted successfully!');
-            
-            // Fetch predictions
-            fetchPredictions();
-        }, 1500);
-        
-        // Actual API call (uncomment when API is available)
-        /*
-        fetch(API_ENDPOINTS.UPLOAD_CSV, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to upload CSV');
-            return response.json();
-        })
-        .then(data => {
-            // Hide CSV preview
-            csvPreviewContainer.classList.add('hidden');
-            
-            // Show toast notification
-            showToast('CSV submitted successfully!');
-            
-            // Fetch predictions
-            fetchPredictions();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            loadingSpinner.classList.add('hidden');
-            errorMessage.classList.remove('hidden');
-        });
-        */
-    }
-
-    // Fetch Predictions
-    function fetchPredictions() {
-        // Show loading spinner
-        loadingSpinner.classList.remove('hidden');
-        predictionResults.classList.add('hidden');
-        errorMessage.classList.add('hidden');
-        
-        // For demo purposes, we'll use mock data
-        setTimeout(() => {
-            const mockData = {
-                top_teams: [
-                    { team: 'MI', points: 16, nrr: 0.45, rank: 1 },
-                    { team: 'CSK', points: 14, nrr: 0.38, rank: 2 },
-                    { team: 'RCB', points: 14, nrr: 0.12, rank: 3 },
-                    { team: 'DC', points: 12, nrr: 0.09, rank: 4 }
-                ],
-                eliminated_teams: [
-                    { team: 'KKR', points: 12, nrr: -0.05, rank: 5 },
-                    { team: 'PBKS', points: 10, nrr: -0.12, rank: 6 },
-                    { team: 'RR', points: 10, nrr: -0.25, rank: 7 },
-                    { team: 'SRH', points: 8, nrr: -0.35, rank: 8 },
-                    { team: 'GT', points: 8, nrr: -0.42, rank: 9 },
-                    { team: 'LSG', points: 6, nrr: -0.58, rank: 10 }
-                ],
-                last_updated: new Date().toISOString()
-            };
-            
-            displayPredictions(mockData);
-        }, 2000);
-        
-        // Actual API call (uncomment when API is available)
-        /*
-        fetch(API_ENDPOINTS.GET_PREDICTIONS)
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to fetch predictions');
-            return response.json();
-        })
-        .then(data => {
-            displayPredictions(data);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            loadingSpinner.classList.add('hidden');
-            errorMessage.classList.remove('hidden');
-        });
-        */
-    }
-
-    // Display Predictions
-    function displayPredictions(data) {
-        // Hide loading spinner
-        loadingSpinner.classList.add('hidden');
-        
-        // Clear previous results
-        topTeamsContainer.innerHTML = '';
-        eliminatedTeamsContainer.innerHTML = '';
-        
-        // Display top teams
-        data.top_teams.forEach(team => {
-            topTeamsContainer.appendChild(createTeamCard(team, true));
-        });
-        
-        // Display eliminated teams
-        data.eliminated_teams.forEach(team => {
-            eliminatedTeamsContainer.appendChild(createTeamCard(team, false));
-        });
-        
-        // Update last updated time
-        const date = new Date(data.last_updated);
-        lastUpdatedTime.textContent = date.toLocaleString();
-        
-        // Show prediction results
-        predictionResults.classList.remove('hidden');
-    }
-
-    // Create Team Card
     function createTeamCard(team, isTopTeam) {
         const card = document.createElement('div');
         card.className = 'team-card';
@@ -295,10 +82,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         card.innerHTML = `
             <div class="team-card-header" style="background-color: ${headerColor}">
-                <h4>${teamFullNames[team.team]}</h4>
+                <h4>${TEAM_FULL_NAMES[team.team] || team.team}</h4>
             </div>
             <div class="team-card-body">
-                <img src="${teamLogos[team.team]}" alt="${team.team} Logo" class="team-logo">
+                <img src="${TEAM_LOGOS[team.team] || 'logos/default.png'}" alt="${team.team} Logo" class="team-logo">
                 <div class="team-rank">#${team.rank}</div>
                 <div class="team-name">${team.team}</div>
                 <div class="team-stats">
@@ -307,20 +94,231 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
         `;
-        
         return card;
     }
 
-    // Show Toast Notification
-    function showToast(message) {
-        const toastMessage = document.querySelector('.toast-message');
-        toastMessage.textContent = message;
-        
-        toast.classList.add('show');
-        
-        // Hide toast after 3 seconds
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 3000);
-    }
+    const showPredictions = (result) => {
+        const top_teams = result["Predicted Playoff Teams"] || [];
+        const eliminated_teams = result["Eliminated Teams"] || [];
+
+        topTeamsContainer.innerHTML = '';
+        eliminatedTeamsContainer.innerHTML = '';
+
+        top_teams.forEach((team, index) => {
+            const teamObj = {
+                team: team,
+                rank: index + 1,
+                points: '',  // Can populate from original data if needed
+                nrr: ''
+            };
+            const card = createTeamCard(teamObj, true);
+            topTeamsContainer.appendChild(card);
+        });
+
+        eliminated_teams.forEach((team, index) => {
+            const teamObj = {
+                team: team,
+                rank: top_teams.length + index + 1,
+                points: '',
+                nrr: ''
+            };
+            const card = createTeamCard(teamObj, false);
+            eliminatedTeamsContainer.appendChild(card);
+        });
+
+        lastUpdatedTime.textContent = new Date().toLocaleString();
+        predictionResults.classList.remove('hidden');
+    };
+
+    generateCsvBtn.addEventListener('click', () => {
+        const data = getTeamData();
+        const csvText = convertToCSV(data);
+        csvPreview.textContent = csvText;
+        csvPreviewContainer.classList.remove('hidden');
+    });
+
+    downloadCsvBtn.addEventListener('click', () => {
+        const csvText = csvPreview.textContent;
+        const blob = new Blob([csvText], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'team_data.csv';
+        link.click();
+    });
+
+    submitCsvBtn.addEventListener('click', async () => {
+        const csvText = csvPreview.textContent;
+        if (!csvText.trim()) {
+            showToast('CSV preview is empty. Generate it first.');
+            return;
+        }
+
+        const file = createCSVFile(csvText);
+        const formData = new FormData();
+        formData.append('file', file);
+
+        loadingSpinner.classList.remove('hidden');
+        predictionResults.classList.add('hidden');
+        errorMessage.classList.add('hidden');
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('API Error');
+            }
+
+            const result = await response.json();
+            showPredictions(result);
+            showToast('Prediction successful!');
+        } catch (error) {
+            console.error('Prediction Error:', error);
+            errorMessage.classList.remove('hidden');
+        } finally {
+            loadingSpinner.classList.add('hidden');
+        }
+    });
+
+    resetFormBtn.addEventListener('click', () => {
+        document.querySelectorAll('.points-input, .nrr-input, .matches-input, .won-input, .lost-input, .remaining-input').forEach(input => input.value = '');
+        csvPreviewContainer.classList.add('hidden');
+        predictionResults.classList.add('hidden');
+        errorMessage.classList.add('hidden');
+    });
 });
+
+
+
+/*document.addEventListener('DOMContentLoaded', () => {
+    const generateCsvBtn = document.getElementById('generate-csv-btn');
+    const downloadCsvBtn = document.getElementById('download-csv-btn');
+    const submitCsvBtn = document.getElementById('submit-csv-btn');
+    const resetFormBtn = document.getElementById('reset-form-btn');
+    const csvPreviewContainer = document.getElementById('csv-preview-container');
+    const csvPreview = document.getElementById('csv-preview');
+    const toast = document.getElementById('toast');
+
+    const topTeamsContainer = document.getElementById('top-teams-container');
+    const eliminatedTeamsContainer = document.getElementById('eliminated-teams-container');
+    const predictionResults = document.getElementById('prediction-results');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const errorMessage = document.getElementById('error-message');
+    const lastUpdatedTime = document.getElementById('last-updated-time');
+
+    const API_URL ="https://ipl-api-256854902296.asia-south1.run.app/ipl2025";/// 'http://127.0.0.1:8000/ipl2025';///'https://ipl-api-256854902296.asia-south1.run.app/ipl2025';
+    
+    const getTeamData = () => {
+        const rows = document.querySelectorAll('#team-data-table tbody tr');
+        const data = [['Team', 'Matches', 'Won', 'Lost', 'Points', 'NRR', 'Remaining_Matches']];
+        rows.forEach(row => {
+            const team = row.cells[0].innerText.trim();
+            const matches = row.querySelector('.matches-input')?.value || '0';
+            const won = row.querySelector('.won-input')?.value || '0';
+            const lost = row.querySelector('.lost-input')?.value || '0';
+            const points = row.querySelector('.points-input')?.value || '0';
+            const nrr = row.querySelector('.nrr-input')?.value || '0';
+            const remaining_matches = row.querySelector('.remaining-input')?.value || '0';
+            data.push([team, matches, won, lost, points, nrr, remaining_matches]);
+        });
+        return data;
+    };
+
+    const convertToCSV = (data) => {
+        return data.map(row => row.join(',')).join('\n');
+    };
+
+    const showToast = (message) => {
+        toast.querySelector('.toast-message').textContent = message;
+        toast.classList.remove('hidden');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    };
+
+    const createCSVFile = (csvText) => {
+        const blob = new Blob([csvText], { type: 'text/csv' });
+        return new File([blob], 'team_data.csv', { type: 'text/csv' });
+    };
+
+    generateCsvBtn.addEventListener('click', () => {
+        const data = getTeamData();
+        const csvText = convertToCSV(data);
+        csvPreview.textContent = csvText;
+        csvPreviewContainer.classList.remove('hidden');
+    });
+
+    downloadCsvBtn.addEventListener('click', () => {
+        const csvText = csvPreview.textContent;
+        const blob = new Blob([csvText], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'team_data.csv';
+        link.click();
+    });
+
+    submitCsvBtn.addEventListener('click', async () => {
+        const csvText = csvPreview.textContent;
+        const file = createCSVFile(csvText);
+        const formData = new FormData();
+        formData.append('file', file);
+
+        loadingSpinner.classList.remove('hidden');
+        predictionResults.classList.add('hidden');
+        errorMessage.classList.add('hidden');
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('API Error');
+            }
+
+            const result = await response.json();
+            showPredictions(result);
+            showToast('CSV submitted successfully!');
+        } catch (error) {
+            console.error('Prediction Error:', error);
+            errorMessage.classList.remove('hidden');
+        } finally {
+            loadingSpinner.classList.add('hidden');
+        }
+    });
+
+    const showPredictions = (result) => {
+        const top_teams = result["Predicted Playoff Teams"] || [];
+        const eliminated_teams = result["Eliminated Teams"] || [];
+
+        topTeamsContainer.innerHTML = '';
+        eliminatedTeamsContainer.innerHTML = '';
+
+        top_teams.forEach(team => {
+            const card = document.createElement('div');
+            card.className = 'team-card';
+            card.textContent = team;
+            topTeamsContainer.appendChild(card);
+        });
+
+        eliminated_teams.forEach(team => {
+            const card = document.createElement('div');
+            card.className = 'team-card';
+            card.textContent = team;
+            eliminatedTeamsContainer.appendChild(card);
+        });
+
+        lastUpdatedTime.textContent = new Date().toLocaleString();
+        predictionResults.classList.remove('hidden');
+    };
+
+    resetFormBtn.addEventListener('click', () => {
+        document.querySelectorAll('.points-input, .nrr-input').forEach(input => input.value = '');
+        csvPreviewContainer.classList.add('hidden');
+        predictionResults.classList.add('hidden');
+        errorMessage.classList.add('hidden');
+    });
+});
+*/
